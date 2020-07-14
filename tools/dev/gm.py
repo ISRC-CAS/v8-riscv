@@ -39,7 +39,7 @@ BUILD_TARGETS_ALL = ["all"]
 
 # All arches that this script understands.
 ARCHES = ["ia32", "x64", "arm", "arm64", "mipsel", "mips64el", "ppc", "ppc64",
-          "s390", "s390x", "android_arm", "android_arm64"]
+          "s390", "s390x", "android_arm", "android_arm64","riscv64"]
 # Arches that get built/run when you don't specify any.
 DEFAULT_ARCHES = ["ia32", "x64", "arm", "arm64"]
 # Modes that this script understands.
@@ -246,7 +246,7 @@ class Config(object):
     if self.arch == "android_arm": return "\nv8_target_cpu = \"arm\""
     if self.arch == "android_arm64": return "\nv8_target_cpu = \"arm64\""
     if self.arch in ("arm", "arm64", "mipsel", "mips64el", "ppc", "ppc64",
-                     "s390", "s390x"):
+                     "s390", "s390x","riscv64"):
       return "\nv8_target_cpu = \"%s\"" % self.arch
     return ""
 

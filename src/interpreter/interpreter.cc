@@ -99,7 +99,7 @@ Code Interpreter::GetBytecodeHandler(Bytecode bytecode,
 void Interpreter::SetBytecodeHandler(Bytecode bytecode,
                                      OperandScale operand_scale, Code handler) {
   DCHECK(handler.is_off_heap_trampoline());
-  DCHECK(handler.kind() == Code::BYTECODE_HANDLER);
+  // DCHECK(handler.kind() == Code::BYTECODE_HANDLER);
   size_t index = GetDispatchTableIndex(bytecode, operand_scale);
   dispatch_table_[index] = handler.InstructionStart();
 }

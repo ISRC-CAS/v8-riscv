@@ -389,6 +389,8 @@ inline static int FrameSlotToFPOffset(int slot) {
 #include "src/execution/mips/frame-constants-mips.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS64
 #include "src/execution/mips64/frame-constants-mips64.h"  // NOLINT
+#elif V8_TARGET_ARCH_RISCV64
+#include "src/execution/riscv64/frame-constants-riscv64.h"  // NOLINT
 #elif V8_TARGET_ARCH_S390
 #include "src/execution/s390/frame-constants-s390.h"  // NOLINT
 #else

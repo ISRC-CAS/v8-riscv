@@ -335,6 +335,11 @@ v8_source_set("unittests_sources") {
       "compiler/x64/instruction-selector-x64-unittest.cc",
       "wasm/trap-handler-x64-unittest.cc",
     ]
+  } else if (v8_current_cpu == "riscv64") {
+    sources += [
+      #"assembler/turbo-assembler-riscv64-unittest.cc",
+      "compiler/riscv64/instruction-selector-riscv64-unittest.cc"
+    ]
   } else if (v8_current_cpu == "ppc" || v8_current_cpu == "ppc64") {
     sources += [
       "assembler/turbo-assembler-ppc-unittest.cc",

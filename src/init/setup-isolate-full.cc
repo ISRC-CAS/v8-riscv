@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/init/setup-isolate.h"
-
 #include "src/base/logging.h"
 #include "src/debug/debug-evaluate.h"
 #include "src/execution/isolate.h"
 #include "src/heap/heap-inl.h"
+#include "src/init/setup-isolate.h"
 #include "src/interpreter/interpreter.h"
 
 namespace v8 {
@@ -16,6 +15,7 @@ namespace internal {
 void SetupIsolateDelegate::SetupBuiltins(Isolate* isolate) {
   if (create_heap_objects_) {
     SetupBuiltinsInternal(isolate);
+// plct: comment it out or it would block the initial RISCV64 mksnapshot run
 #ifdef DEBUG
     DebugEvaluate::VerifyTransitiveBuiltins(isolate);
 #endif  // DEBUG

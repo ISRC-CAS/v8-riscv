@@ -22,6 +22,9 @@
 #include "src/codegen/mips/register-mips.h"
 #elif V8_TARGET_ARCH_MIPS64
 #include "src/codegen/mips64/register-mips64.h"
+#elif V8_TARGET_ARCH_RISCV64
+#include "src/codegen/riscv64/register-riscv64.h"
+
 #elif V8_TARGET_ARCH_S390
 #include "src/codegen/s390/register-s390.h"
 #else

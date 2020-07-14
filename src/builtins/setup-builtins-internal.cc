@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/init/setup-isolate.h"
-
 #include "src/builtins/builtins.h"
 #include "src/codegen/assembler-inl.h"
 #include "src/codegen/interface-descriptors.h"
@@ -13,6 +11,7 @@
 #include "src/execution/isolate.h"
 #include "src/handles/handles-inl.h"
 #include "src/heap/heap-inl.h"  // For MemoryAllocator::code_range.
+#include "src/init/setup-isolate.h"
 #include "src/interpreter/bytecodes.h"
 #include "src/interpreter/interpreter-generator.h"
 #include "src/interpreter/interpreter.h"
@@ -323,9 +322,99 @@ void SetupIsolateDelegate::SetupBuiltinsInternal(Isolate* isolate) {
                                  #Name);                                    \
   AddBuiltin(builtins, index++, code);
 
-  BUILTIN_LIST(BUILD_CPP, BUILD_TFJ, BUILD_TFC, BUILD_TFS, BUILD_TFH, BUILD_BCH,
-               BUILD_ASM);
+#define BUILD_NONE(Name, ...) ;
+  // plct: Only build the TFS Builtin Increment to give a initial RISCV64
+  // mksnapshot BUILTIN_LIST(BUILD_CPP, BUILD_TFJ, BUILD_TFC, BUILD_TFS,
+  // BUILD_TFH, BUILD_BCH,
+  //            BUILD_ASM);
+  // BUILTIN_LIST(BUILD_NONE, BUILD_NONE, BUILD_NONE, BUILD_NONE, BUILD_NONE,
+  // BUILD_NONE,
+  //              BUILD_ASM);
+  //  code = BuildWithCodeStubAssemblerCS(isolate, index,
+  //  &Builtins::Generate_Increment, CallDescriptors::Increment, "Increment");
+  //  AddBuiltin(builtins, index++, code);
+#if 0
+  // Not process CPP, BCH, ASM type builtins
+  BUILTIN_LIST(BUILD_CPP, BUILD_TFJ, BUILD_TFC, BUILD_TFS, BUILD_TFH,
+               BUILD_BCH, BUILD_ASM);
+#endif
+#if 1
+ index=2;
+ //generate Builtins_AdaptorWithBuiltinExitFrame, helloworld require
+ code = BuildWithCodeStubAssemblerCS( isolate, index, &Builtins::Generate_AdaptorWithBuiltinExitFrame, CallDescriptors::CppBuiltinAdaptor, "AdaptorWithBuiltinExitFrame");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_ArgumentsAdaptorTrampoline, "ArgumentsAdaptorTrampoline");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ index = 6;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_CallFunction_ReceiverIsAny, "CallFunction_ReceiverIsAny");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ index = 10;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_Call_ReceiverIsAny, "Call_ReceiverIsAny");
+ AddBuiltin(builtins, index++, code);
+//  helloworld require
+ index=40;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_JSEntry, "JSEntry");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ index=43;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_JSEntryTrampoline, "JSEntryTrampoline");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ index=56;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_InterpreterEntryTrampoline, "InterpreterEntryTrampoline");
+ AddBuiltin(builtins, index++, code);
+ // generate Builtins_LoadGlobalIC_NoFeedback, helloworld require
+ index=115;
+ code = BuildWithCodeStubAssemblerCS( isolate, index, &Builtins::Generate_LoadGlobalIC_NoFeedback, CallDescriptors::LoadGlobalNoFeedback, "LoadGlobalIC_NoFeedback");
+ AddBuiltin(builtins, index++, code);
+ index=119;
+  // generate Builtins_LoadIC_NoFeedback, helloworld require
+ code = BuildWithCodeStubAssemblerCS( isolate, index, &Builtins::Generate_LoadIC_NoFeedback, CallDescriptors::LoadNoFeedback, "LoadIC_NoFeedback");
+ AddBuiltin(builtins, index++, code);
+ // helloworld require
+#endif
+ index=240;
+ code = BuildAdaptor(isolate, index, (reinterpret_cast<v8::internal::Address>(Builtin_ConsoleLog)), "ConsoleLog");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+#if 1
+ index=611;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit, "CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit");
+ AddBuiltin(builtins, index++, code);
+// helloworld require
+ index=612;
+ code = BuildWithMacroAssembler(isolate, index, Builtins::Generate_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_BuiltinExit, "CEntry_Return1_DontSaveFPRegs_ArgvOnStack_BuiltinExit");
+ AddBuiltin(builtins, index++, code);
+ // helloworld require
+ index=1087;
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kLdaConstant);
+ AddBuiltin(builtins, index++, code);
+ index=1088;
+ // generate Builtins_LdaGlobalHandler, helloworld require
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kLdaGlobal);
+ AddBuiltin(builtins, index++, code);
+ // helloworld required
+ index=1107;
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kStar);
+ AddBuiltin(builtins, index++, code);
+ index=1109;
+ // generate Builtins_LdaNamedProperty, helloworld require
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kLdaNamedProperty);
+ AddBuiltin(builtins, index++, code);
 
+ // helloworld required
+ index=1158;
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kCallProperty1);
+ AddBuiltin(builtins, index++, code);
+ // helloworld required
+ index=1239;
+ code = GenerateBytecodeHandler(isolate, index, interpreter::OperandScale::kSingle, interpreter::Bytecode::kReturn);
+ AddBuiltin(builtins, index++, code);
+#endif
+ index=1551;
 #undef BUILD_CPP
 #undef BUILD_TFJ
 #undef BUILD_TFC
@@ -333,6 +422,7 @@ void SetupIsolateDelegate::SetupBuiltinsInternal(Isolate* isolate) {
 #undef BUILD_TFH
 #undef BUILD_BCH
 #undef BUILD_ASM
+
   CHECK_EQ(Builtins::builtin_count, index);
 
   ReplacePlaceholders(isolate);

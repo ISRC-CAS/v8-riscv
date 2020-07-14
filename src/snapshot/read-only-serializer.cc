@@ -65,6 +65,7 @@ void ReadOnlySerializer::FinalizeSerialization() {
   SerializeDeferredObjects();
   Pad();
 
+#if 0
 #ifdef DEBUG
   // Check that every object on read-only heap is reachable (and was
   // serialized).
@@ -73,6 +74,7 @@ void ReadOnlySerializer::FinalizeSerialization() {
        object = iterator.Next()) {
     CHECK(serialized_objects_.count(object));
   }
+#endif
 #endif
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "src/codegen/register-configuration.h"
+
 #include "src/base/lazy-instance.h"
 #include "src/codegen/cpu-features.h"
 #include "src/codegen/register-arch.h"
@@ -53,6 +54,8 @@ static int get_num_allocatable_double_registers() {
           ? kMaxAllocatableDoubleRegisterCount
           : (ALLOCATABLE_NO_VFP32_DOUBLE_REGISTERS(REGISTER_COUNT) 0);
 #elif V8_TARGET_ARCH_ARM64
+      kMaxAllocatableDoubleRegisterCount;
+#elif V8_TARGET_ARCH_RISCV64
       kMaxAllocatableDoubleRegisterCount;
 #elif V8_TARGET_ARCH_MIPS
       kMaxAllocatableDoubleRegisterCount;

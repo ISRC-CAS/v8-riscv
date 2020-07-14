@@ -69,6 +69,18 @@ constexpr RegList kLiftoffAssemblerFpCacheRegs = CPURegister::ListOf(
     d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d16, d17,
     d18, d19, d20, d21, d22, d23, d24, d25, d26, d27, d28, d29);
 
+#elif V8_TARGET_ARCH_RISCV64
+// x16: ip0, x17: ip1, x18: platform register, x26: root, x27: cp, x29: fp,
+// x30: lr, x31: xzr.
+constexpr RegList kLiftoffAssemblerGpCacheRegs =
+    Register::ListOf(x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13,
+                     x14, x15, x19, x20, x21, x22, x23, x24, x25, x28);
+
+// d15: fp_zero, d30-d31: macro-assembler scratch V Registers.
+constexpr RegList kLiftoffAssemblerFpCacheRegs = FPURegister::ListOf(
+    f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f16, f17,
+    f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29);
+
 #else
 
 constexpr RegList kLiftoffAssemblerGpCacheRegs = 0xff;

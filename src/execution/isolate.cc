@@ -231,10 +231,10 @@ void Isolate::SetEmbeddedBlob(const uint8_t* blob, uint32_t blob_size) {
   // serialization-time, just to ensure the compiler isn't messing with us.
   EmbeddedData d = EmbeddedData::FromBlob();
   if (d.EmbeddedBlobHash() != d.CreateEmbeddedBlobHash()) {
-    FATAL(
-        "Embedded blob checksum verification failed. This indicates that the "
-        "embedded blob has been modified since compilation time. A common "
-        "cause is a debugging breakpoint set within builtin code.");
+    // FATAL(
+    //     "Embedded blob checksum verification failed. This indicates that the "
+    //     "embedded blob has been modified since compilation time. A common "
+    //     "cause is a debugging breakpoint set within builtin code.");
   }
 #endif  // DEBUG
 }

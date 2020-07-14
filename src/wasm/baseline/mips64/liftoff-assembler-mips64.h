@@ -1894,6 +1894,31 @@ void LiftoffAssembler::emit_i16x8_rounding_average_u(LiftoffRegister dst,
   bailout(kSimd, "emit_i16x8_rounding_average_u");
 }
 
+void LiftoffAssembler::emit_f32x4_abs(LiftoffRegister dst,
+                                      LiftoffRegister src) {
+  bailout(kSimd, "f32x4_abs");
+}
+
+void LiftoffAssembler::emit_f64x2_abs(LiftoffRegister dst,
+                                      LiftoffRegister src) {
+  bailout(kSimd, "f64x2_abs");
+}
+
+void LiftoffAssembler::emit_i8x16_abs(LiftoffRegister dst,
+                                      LiftoffRegister src) {
+  bailout(kSimd, "i8x16_abs");
+}
+
+void LiftoffAssembler::emit_i16x8_abs(LiftoffRegister dst,
+                                      LiftoffRegister src) {
+  bailout(kSimd, "i16x8_abs");
+}
+
+void LiftoffAssembler::emit_i32x4_abs(LiftoffRegister dst,
+                                      LiftoffRegister src) {
+  bailout(kSimd, "i32x4_abs");
+}
+
 void LiftoffAssembler::StackCheck(Label* ool_code, Register limit_address) {
   TurboAssembler::Uld(limit_address, MemOperand(limit_address));
   TurboAssembler::Branch(ool_code, ule, sp, Operand(limit_address));

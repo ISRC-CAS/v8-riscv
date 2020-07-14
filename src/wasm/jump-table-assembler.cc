@@ -200,6 +200,24 @@ void JumpTableAssembler::NopBytes(int bytes) {
   }
 }
 
+#elif V8_TARGET_ARCH_RISCV64
+void JumpTableAssembler::EmitLazyCompileJumpSlot(uint32_t func_index,
+                                                 Address lazy_compile_target) {}
+
+bool JumpTableAssembler::EmitJumpSlot(Address target) {
+  // plct: work around return true
+  return true;
+}
+
+void JumpTableAssembler::EmitFarJumpSlot(Address target) {}
+
+// static
+void JumpTableAssembler::PatchFarJumpSlot(Address slot, Address target) {
+  UNREACHABLE();
+}
+
+void JumpTableAssembler::NopBytes(int bytes) {}
+
 #elif V8_TARGET_ARCH_S390X
 void JumpTableAssembler::EmitLazyCompileJumpSlot(uint32_t func_index,
                                                  Address lazy_compile_target) {

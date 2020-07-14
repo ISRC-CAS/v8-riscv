@@ -1987,6 +1987,7 @@ void Builtins::Generate_CallFunction(MacroAssembler* masm,
   __ Lwu(a3, FieldMemOperand(a2, SharedFunctionInfo::kFlagsOffset));
   __ And(kScratchReg, a3,
          Operand(SharedFunctionInfo::IsClassConstructorBit::kMask));
+  
   __ Branch(&class_constructor, ne, kScratchReg, Operand(zero_reg));
 
   // Enter the context of the function; ToObject has to run in the function

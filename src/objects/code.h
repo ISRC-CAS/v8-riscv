@@ -410,6 +410,8 @@ class Code : public HeapObject {
   // due to padding for code alignment.
 #if V8_TARGET_ARCH_ARM64
   static constexpr int kHeaderPaddingSize = COMPRESS_POINTERS_BOOL ? 20 : 0;
+#elif V8_TARGET_ARCH_RISCV64
+  static constexpr int kHeaderPaddingSize = 0;
 #elif V8_TARGET_ARCH_MIPS64
   static constexpr int kHeaderPaddingSize = 0;
 #elif V8_TARGET_ARCH_X64

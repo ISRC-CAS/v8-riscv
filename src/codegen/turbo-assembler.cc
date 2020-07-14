@@ -37,6 +37,15 @@ void TurboAssemblerBase::IndirectLoadConstant(Register destination,
     // Roots are loaded relative to the root register.
     LoadRoot(destination, root_index);
   } else if (isolate()->builtins()->IsBuiltinHandle(object, &builtin_index)) {
+    if (1) {
+     // 43 is Builtins::kJSEntryTrampoline
+     // use builtin_entry_table_offset replace builtins_table_offset
+     LoadRootRelative(destination,
+        IsolateData::builtin_entry_table_offset() + builtin_index * kSystemPointerSize);
+     return;
+    }
+    // RootRegisterOffsetForBuiltinIndex(builtin_index)) is:
+    // builtins_table_offset() + builtin_index * kSystemPointerSize;
     // Similar to roots, builtins may be loaded from the builtins table.
     LoadRootRelative(destination,
                      RootRegisterOffsetForBuiltinIndex(builtin_index));

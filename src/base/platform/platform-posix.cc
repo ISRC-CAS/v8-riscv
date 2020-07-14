@@ -14,13 +14,12 @@
 #endif
 #include <sched.h>  // for sched_yield
 #include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 #if defined(__APPLE__) || defined(__DragonFly__) || defined(__FreeBSD__) || \
     defined(__NetBSD__) || defined(__OpenBSD__)
 #include <sys/sysctl.h>  // NOLINT, for sysctl
@@ -34,10 +33,9 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "src/base/platform/platform-posix.h"
-
 #include "src/base/lazy-instance.h"
 #include "src/base/macros.h"
+#include "src/base/platform/platform-posix.h"
 #include "src/base/platform/platform.h"
 #include "src/base/platform/time.h"
 #include "src/base/utils/random-number-generator.h"
@@ -214,6 +212,11 @@ int OS::ActivationFrameAlignment() {
   return 8;
 #elif V8_TARGET_ARCH_S390
   return 8;
+#elif V8_TARGET_ARCH_RISCV64
+  // The stack grows downwards (towards lower addresses) and the stack
+  //  pointer shall be aligned to a 128-bit boundary upon procedure
+  //  entry. ref "https://github.com/riscv/riscv-elf-psabi-doc/"
+  return 16;
 #else
   // Otherwise we just assume 16 byte alignment, i.e.:
   // - With gcc 4.4 the tree vectorization optimizer can generate code
@@ -442,15 +445,11 @@ bool OS::HasLazyCommits() {
 }
 #endif  // !V8_OS_CYGWIN && !V8_OS_FUCHSIA
 
-const char* OS::GetGCFakeMMapFile() {
-  return g_gc_fake_mmap;
-}
-
+const char* OS::GetGCFakeMMapFile() { return g_gc_fake_mmap; }
 
 void OS::Sleep(TimeDelta interval) {
   usleep(static_cast<useconds_t>(interval.InMicroseconds()));
 }
-
 
 void OS::Abort() {
   if (g_hard_abort) {
@@ -460,12 +459,13 @@ void OS::Abort() {
   abort();
 }
 
-
 void OS::DebugBreak() {
 #if V8_HOST_ARCH_ARM
   asm("bkpt 0");
 #elif V8_HOST_ARCH_ARM64
   asm("brk 0");
+#elif V8_HOST_ARCH_RISCV64
+  asm("ebreak");
 #elif V8_HOST_ARCH_MIPS
   asm("break");
 #elif V8_HOST_ARCH_MIPS64
@@ -484,7 +484,6 @@ void OS::DebugBreak() {
 #endif
 }
 
-
 class PosixMemoryMappedFile final : public OS::MemoryMappedFile {
  public:
   PosixMemoryMappedFile(FILE* file, void* memory, size_t size)
@@ -498,7 +497,6 @@ class PosixMemoryMappedFile final : public OS::MemoryMappedFile {
   void* const memory_;
   size_t const size_;
 };
-
 
 // static
 OS::MemoryMappedFile* OS::MemoryMappedFile::open(const char* name,
@@ -545,17 +543,12 @@ OS::MemoryMappedFile* OS::MemoryMappedFile::create(const char* name,
   return nullptr;
 }
 
-
 PosixMemoryMappedFile::~PosixMemoryMappedFile() {
   if (memory_) CHECK(OS::Free(memory_, RoundUp(size_, OS::AllocatePageSize())));
   fclose(file_);
 }
 
-
-int OS::GetCurrentProcessId() {
-  return static_cast<int>(getpid());
-}
-
+int OS::GetCurrentProcessId() { return static_cast<int>(getpid()); }
 
 int OS::GetCurrentThreadId() {
 #if V8_OS_MACOSX || (V8_OS_ANDROID && defined(__APPLE__))
@@ -598,24 +591,18 @@ int OS::GetUserTime(uint32_t* secs, uint32_t* usecs) {
 }
 #endif
 
-double OS::TimeCurrentMillis() {
-  return Time::Now().ToJsTime();
-}
+double OS::TimeCurrentMillis() { return Time::Now().ToJsTime(); }
 
 double PosixTimezoneCache::DaylightSavingsOffset(double time) {
   if (std::isnan(time)) return std::numeric_limits<double>::quiet_NaN();
-  time_t tv = static_cast<time_t>(std::floor(time/msPerSecond));
+  time_t tv = static_cast<time_t>(std::floor(time / msPerSecond));
   struct tm tm;
   struct tm* t = localtime_r(&tv, &tm);
   if (nullptr == t) return std::numeric_limits<double>::quiet_NaN();
   return t->tm_isdst > 0 ? 3600 * msPerSecond : 0;
 }
 
-
-int OS::GetLastError() {
-  return errno;
-}
-
+int OS::GetLastError() { return errno; }
 
 // ----------------------------------------------------------------------------
 // POSIX stdio support.
@@ -635,10 +622,7 @@ FILE* OS::FOpen(const char* path, const char* mode) {
   return nullptr;
 }
 
-
-bool OS::Remove(const char* path) {
-  return (remove(path) == 0);
-}
+bool OS::Remove(const char* path) { return (remove(path) == 0); }
 
 char OS::DirectorySeparator() { return '/'; }
 
@@ -646,14 +630,9 @@ bool OS::isDirectorySeparator(const char ch) {
   return ch == DirectorySeparator();
 }
 
-
-FILE* OS::OpenTemporaryFile() {
-  return tmpfile();
-}
-
+FILE* OS::OpenTemporaryFile() { return tmpfile(); }
 
 const char* const OS::LogFileOpenMode = "w";
-
 
 void OS::Print(const char* format, ...) {
   va_list args;
@@ -661,7 +640,6 @@ void OS::Print(const char* format, ...) {
   VPrint(format, args);
   va_end(args);
 }
-
 
 void OS::VPrint(const char* format, va_list args) {
 #if defined(ANDROID) && !defined(V8_ANDROID_LOG_STDOUT)
@@ -671,14 +649,12 @@ void OS::VPrint(const char* format, va_list args) {
 #endif
 }
 
-
 void OS::FPrint(FILE* out, const char* format, ...) {
   va_list args;
   va_start(args, format);
   VFPrint(out, format, args);
   va_end(args);
 }
-
 
 void OS::VFPrint(FILE* out, const char* format, va_list args) {
 #if defined(ANDROID) && !defined(V8_ANDROID_LOG_STDOUT)
@@ -688,14 +664,12 @@ void OS::VFPrint(FILE* out, const char* format, va_list args) {
 #endif
 }
 
-
 void OS::PrintError(const char* format, ...) {
   va_list args;
   va_start(args, format);
   VPrintError(format, args);
   va_end(args);
 }
-
 
 void OS::VPrintError(const char* format, va_list args) {
 #if defined(ANDROID) && !defined(V8_ANDROID_LOG_STDOUT)
@@ -705,7 +679,6 @@ void OS::VPrintError(const char* format, va_list args) {
 #endif
 }
 
-
 int OS::SNPrintF(char* str, int length, const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -714,22 +687,16 @@ int OS::SNPrintF(char* str, int length, const char* format, ...) {
   return result;
 }
 
-
-int OS::VSNPrintF(char* str,
-                  int length,
-                  const char* format,
-                  va_list args) {
+int OS::VSNPrintF(char* str, int length, const char* format, va_list args) {
   int n = vsnprintf(str, length, format, args);
   if (n < 0 || n >= length) {
     // If the length is zero, the assignment fails.
-    if (length > 0)
-      str[length - 1] = '\0';
+    if (length > 0) str[length - 1] = '\0';
     return -1;
   } else {
     return n;
   }
 }
-
 
 // ----------------------------------------------------------------------------
 // POSIX string support.
@@ -738,7 +705,6 @@ int OS::VSNPrintF(char* str,
 void OS::StrNCpy(char* dest, int length, const char* src, size_t n) {
   strncpy(dest, src, n);
 }
-
 
 // ----------------------------------------------------------------------------
 // POSIX thread support.
@@ -762,11 +728,7 @@ Thread::Thread(const Options& options)
   set_name(options.name());
 }
 
-
-Thread::~Thread() {
-  delete data_;
-}
-
+Thread::~Thread() { delete data_; }
 
 static void SetThreadName(const char* name) {
 #if V8_OS_DRAGONFLYBSD || V8_OS_FREEBSD || V8_OS_OPENBSD
@@ -779,7 +741,7 @@ static void SetThreadName(const char* name) {
   // for it at runtime.
   int (*dynamic_pthread_setname_np)(const char*);
   *reinterpret_cast<void**>(&dynamic_pthread_setname_np) =
-    dlsym(RTLD_DEFAULT, "pthread_setname_np");
+      dlsym(RTLD_DEFAULT, "pthread_setname_np");
   if (dynamic_pthread_setname_np == nullptr) return;
 
   // Mac OS X does not expose the length limit of the name, so hardcode it.
@@ -793,7 +755,6 @@ static void SetThreadName(const char* name) {
 #endif
 }
 
-
 static void* ThreadEntry(void* arg) {
   Thread* thread = reinterpret_cast<Thread*>(arg);
   // We take the lock here to make sure that pthread_create finished first since
@@ -805,7 +766,6 @@ static void* ThreadEntry(void* arg) {
   thread->NotifyStartedAndRun();
   return nullptr;
 }
-
 
 void Thread::set_name(const char* name) {
   strncpy(name_, name, sizeof(name_) - 1);
@@ -858,7 +818,6 @@ static Thread::LocalStorageKey PthreadKeyToLocalKey(pthread_key_t pthread_key) {
 #endif
 }
 
-
 static pthread_key_t LocalKeyToPthreadKey(Thread::LocalStorageKey local_key) {
 #if V8_OS_CYGWIN
   STATIC_ASSERT(sizeof(Thread::LocalStorageKey) == sizeof(pthread_key_t));
@@ -868,7 +827,6 @@ static pthread_key_t LocalKeyToPthreadKey(Thread::LocalStorageKey local_key) {
   return static_cast<pthread_key_t>(local_key);
 #endif
 }
-
 
 #ifdef V8_FAST_TLS_SUPPORTED
 
@@ -881,7 +839,7 @@ static void InitializeTlsBaseOffset() {
   const size_t kBufferSize = 128;
   char buffer[kBufferSize];
   size_t buffer_size = kBufferSize;
-  int ctl_name[] = { CTL_KERN , KERN_OSRELEASE };
+  int ctl_name[] = {CTL_KERN, KERN_OSRELEASE};
   if (sysctl(ctl_name, 2, buffer, &buffer_size, nullptr, 0) != 0) {
     FATAL("V8 failed to get kernel version");
   }
@@ -911,7 +869,6 @@ static void InitializeTlsBaseOffset() {
   tls_base_offset_initialized.store(true, std::memory_order_release);
 }
 
-
 static void CheckFastTls(Thread::LocalStorageKey key) {
   void* expected = reinterpret_cast<void*>(0x1234CAFE);
   Thread::SetThreadLocal(key, expected);
@@ -923,7 +880,6 @@ static void CheckFastTls(Thread::LocalStorageKey key) {
 }
 
 #endif  // V8_FAST_TLS_SUPPORTED
-
 
 Thread::LocalStorageKey Thread::CreateThreadLocalKey() {
 #ifdef V8_FAST_TLS_SUPPORTED
@@ -945,7 +901,6 @@ Thread::LocalStorageKey Thread::CreateThreadLocalKey() {
   return local_key;
 }
 
-
 void Thread::DeleteThreadLocalKey(LocalStorageKey key) {
   pthread_key_t pthread_key = LocalKeyToPthreadKey(key);
   int result = pthread_key_delete(pthread_key);
@@ -953,12 +908,10 @@ void Thread::DeleteThreadLocalKey(LocalStorageKey key) {
   USE(result);
 }
 
-
 void* Thread::GetThreadLocal(LocalStorageKey key) {
   pthread_key_t pthread_key = LocalKeyToPthreadKey(key);
   return pthread_getspecific(pthread_key);
 }
-
 
 void Thread::SetThreadLocal(LocalStorageKey key, void* value) {
   pthread_key_t pthread_key = LocalKeyToPthreadKey(key);

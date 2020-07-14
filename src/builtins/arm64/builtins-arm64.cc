@@ -2079,7 +2079,7 @@ namespace {
 void EnterArgumentsAdaptorFrame(MacroAssembler* masm) {
   __ Push<TurboAssembler::kSignLR>(lr, fp);
   __ Mov(x11, StackFrame::TypeToMarker(StackFrame::ARGUMENTS_ADAPTOR));
-  __ Push(x11, x1);  // x1: function
+  __ Push(x11, x1);    // x1: function
   __ SmiTag(x11, x0);  // x0: number of arguments.
   __ Push(x11, padreg);
   __ Add(fp, sp, ArgumentsAdaptorFrameConstants::kFixedFrameSizeFromFp);
@@ -2343,7 +2343,6 @@ void Builtins::Generate_CallFunction(MacroAssembler* masm,
   __ Ldr(w3, FieldMemOperand(x2, SharedFunctionInfo::kFlagsOffset));
   __ TestAndBranchIfAnySet(w3, SharedFunctionInfo::IsClassConstructorBit::kMask,
                            &class_constructor);
-
   // Enter the context of the function; ToObject has to run in the function
   // context, and we also need to take the global proxy from the function
   // context in case of conversion.
@@ -3688,7 +3687,7 @@ void Builtins::Generate_DirectCEntry(MacroAssembler* masm) {
   // making the call GC safe. The irregexp backend relies on this.
 
   __ Poke<TurboAssembler::kSignLR>(lr, 0);  // Store the return address.
-  __ Blr(x10);     // Call the C++ function.
+  __ Blr(x10);                              // Call the C++ function.
   __ Peek<TurboAssembler::kAuthLR>(lr, 0);  // Return to calling code.
   __ AssertFPCRState();
   __ Ret();

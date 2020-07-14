@@ -9,6 +9,8 @@
 #include "src/codegen/arm/constants-arm.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM64
 #include "src/codegen/arm64/constants-arm64.h"  // NOLINT
+#elif V8_TARGET_ARCH_RISCV64
+#include "src/codegen/riscv64/constants-riscv64.h"  // NOLINT
 #elif V8_TARGET_ARCH_IA32
 #include "src/codegen/ia32/constants-ia32.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS

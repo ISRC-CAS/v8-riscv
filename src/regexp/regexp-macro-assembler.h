@@ -24,7 +24,6 @@ struct DisjunctDecisionRow {
   Label* on_match;
 };
 
-
 class RegExpMacroAssembler {
  public:
   // The implementation must be able to handle at least:
@@ -42,6 +41,8 @@ class RegExpMacroAssembler {
     kIA32Implementation,
     kARMImplementation,
     kARM64Implementation,
+    //    kRISCV32Implementation,
+    kRISCV64Implementation,
     kMIPSImplementation,
     kS390Implementation,
     kPPCImplementation,
@@ -50,10 +51,7 @@ class RegExpMacroAssembler {
     kBytecodeImplementation
   };
 
-  enum StackCheckFlag {
-    kNoStackLimitCheck = false,
-    kCheckStackLimit = true
-  };
+  enum StackCheckFlag { kNoStackLimitCheck = false, kCheckStackLimit = true };
 
   RegExpMacroAssembler(Isolate* isolate, Zone* zone);
   virtual ~RegExpMacroAssembler();
@@ -65,7 +63,7 @@ class RegExpMacroAssembler {
   // at least once for every stack_limit() pushes that are executed.
   virtual int stack_limit_slack() = 0;
   virtual bool CanReadUnaligned() = 0;
-  virtual void AdvanceCurrentPosition(int by) = 0;  // Signed cp change.
+  virtual void AdvanceCurrentPosition(int by) = 0;    // Signed cp change.
   virtual void AdvanceRegister(int reg, int by) = 0;  // r[reg] += by.
   // Continues execution from the position pushed on the top of the backtrack
   // stack by an earlier PushBacktrack(Label*).
@@ -76,8 +74,7 @@ class RegExpMacroAssembler {
   virtual void CheckCharacter(unsigned c, Label* on_equal) = 0;
   // Bitwise and the current character with the given constant and then
   // check for a match with c.
-  virtual void CheckCharacterAfterAnd(unsigned c,
-                                      unsigned and_with,
+  virtual void CheckCharacterAfterAnd(unsigned c, unsigned and_with,
                                       Label* on_equal) = 0;
   virtual void CheckCharacterGT(uc16 limit, Label* on_greater) = 0;
   virtual void CheckCharacterLT(uc16 limit, Label* on_less) = 0;
@@ -94,14 +91,11 @@ class RegExpMacroAssembler {
   // matches.  If the label is nullptr then we should pop a backtrack address
   // off the stack and go to that.
   virtual void CheckNotCharacter(unsigned c, Label* on_not_equal) = 0;
-  virtual void CheckNotCharacterAfterAnd(unsigned c,
-                                         unsigned and_with,
+  virtual void CheckNotCharacterAfterAnd(unsigned c, unsigned and_with,
                                          Label* on_not_equal) = 0;
   // Subtract a constant from the current character, then and with the given
   // constant and then check for a match with c.
-  virtual void CheckNotCharacterAfterMinusAnd(uc16 c,
-                                              uc16 minus,
-                                              uc16 and_with,
+  virtual void CheckNotCharacterAfterMinusAnd(uc16 c, uc16 minus, uc16 and_with,
                                               Label* on_not_equal) = 0;
   virtual void CheckCharacterInRange(uc16 from,
                                      uc16 to,  // Both inclusive.
@@ -213,7 +207,7 @@ class RegExpMacroAssembler {
   Zone* zone_;
 };
 
-class NativeRegExpMacroAssembler: public RegExpMacroAssembler {
+class NativeRegExpMacroAssembler : public RegExpMacroAssembler {
  public:
   // Type of input string to generate code for.
   enum Mode { LATIN1 = 1, UC16 = 2 };
