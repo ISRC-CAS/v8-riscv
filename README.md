@@ -37,7 +37,7 @@ We recommand you to buy a VPS oversea, with a large HDD. Your life would be happ
 11. 开始真正的 ricv64 d8 (目前构建的是 release 版本)：
 
 ```
-mkdir rv64.natived8.debug && cd rv64.natived8.debug
+mkdir rv64.natived8.release && cd rv64.natived8.release
 cat >args.gn <<"EOT"
 is_component_build = false
 is_debug = false
@@ -75,7 +75,7 @@ https://github.com/isrc-cas/PLCT-Toolbox/blob/master/deploy_riscv64fedora_qemu.s
 
 0x03 Hello World!
 
-将 ./testcase/helloworld.js 拷贝进入 QEMU （用 scp 命令）就可以得到以下画面：
+将 d8， snapshot_blob.bin 和 ./testcase/helloworld.js 拷贝进入 QEMU （用 scp 命令）就可以得到以下画面：
 
 ![](hello-from-plct.png)
 
