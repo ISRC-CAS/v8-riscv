@@ -1,3 +1,19 @@
+# Important: We are now united with FutureWei V8 team!
+
+After we release the intial helloworld porting work to public,
+Peng Wu's team from FutureWei had also released their codebase.
+The two teams have a quick meeting, and all agree that there is
+no reason to keep two porting work separately.
+
+So, FutureWei (and RIOS Lab) and PLCT Lab has united now!
+We will transfer all our work to https://github.com/v8-riscv/v8
+as the unique codebase for V8 RISC-V Porting.
+
+Press: Peng Wu will give a talk about V8 porting in RISC-V Global Forum 2020!
+
+https://events.linuxfoundation.org/riscv-global-forum/program/schedule/
+
+
 V8 for RISC-V (WIP)
 ====================
 
